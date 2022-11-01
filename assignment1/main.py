@@ -1,3 +1,4 @@
+import os
 import json
 import random
 import string
@@ -17,8 +18,23 @@ def default_handler(server: HTTPServer, request: HTTPRequest, response: HTTPResp
 
 
 def task2_data_handler(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
-    # TODO: Task 2: Serve static content based on request URL (20%)
-    pass
+    if request.method == "POST":
+        response.status_code, response.reason = 405, "Method Not Allowed"
+        return
+    target = request.request_target[0:]
+    cwd = os.getcwd()
+    path = os.path.join(cwd, target.replace("/", "\\")[1:])
+    try:
+        file = open(path, mode='rb')
+    except FileNotFoundError:
+        response.status_code, response.reason = 404, 'Not Found'
+        return
+    path = path.split("\\")[-1]
+    content_type = mimetypes.guess_type(path)
+    response.add_header("Content-Type", content_type[0])
+    content = file.read()
+    response.add_header("Content-Length", str(len(content)))
+    response.status_code, response.reason, response.body = 200, "OK", content
 
 
 def task3_json_handler(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
