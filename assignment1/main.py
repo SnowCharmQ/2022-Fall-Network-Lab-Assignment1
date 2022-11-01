@@ -78,7 +78,7 @@ def task5_session_getimage(server: HTTPServer, request: HTTPRequest, response: H
 
 
 # TODO: Change this to your student ID, otherwise you may lost all of your points
-YOUR_STUDENT_ID = 12010000
+YOUR_STUDENT_ID = 12013006
 
 http_server = HTTPServer(config.LISTEN_PORT)
 http_server.register_handler("/", default_handler)

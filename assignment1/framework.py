@@ -40,11 +40,20 @@ class HTTPRequest:
         HTTP-message   = method SP request-target SP HTTP-version CRLF
                          *( header-field CRLF )
                          CRLF
-
-        :return:
         """
-        # TODO: Task1, read from socket and fill HTTPRequest object fields
-
+        # TODO(F): Task1, read from socket and fill HTTPRequest object fields
+        msg = self.socket.recvfrom(2048)[0]
+        msg = str(msg)
+        info = msg.split(" ", maxsplit=2)
+        self.method = info[0].split("'")[1]
+        self.request_target = info[1]
+        print(info[2])
+        strings = info[2].split('\\r\\n')
+        self.http_version = strings[0]
+        for s in strings[1:]:
+            kv = s.split(": ")
+            if len(kv) == 2:
+                self.headers.append(HTTPHeader(kv[0], kv[1]))
         # Debug: print http request
         print(f"{self.method} {self.request_target} {self.http_version}")
         for h in self.headers:
@@ -78,10 +87,13 @@ class HTTPResponse:
     def write_all(self):
         """
         set status_line, and write status_line, headers and message body (if exists) into self.socket
-        :return:
         """
-        # TODO: Task1, construct response from fields and write binary data to socket
-        pass
+        # TODO(F): Task1, construct response from fields and write binary data to socket
+        msg = self.http_version + " " + str(self.status_code) + " " + self.reason + "\r\n"
+        for h in self.headers:
+            msg += h.name + ": " + h.value + "\r\n"
+        msg += "\r\n"
+        self.socket.send(msg.encode() + self.body)
 
     def add_header(self, name: str, value: str):
         self.headers.append(HTTPHeader(name, value))
