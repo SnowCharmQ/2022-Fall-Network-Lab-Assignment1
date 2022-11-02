@@ -40,7 +40,6 @@ def task2_data_handler(server: HTTPServer, request: HTTPRequest, response: HTTPR
 
 def task3_json_handler(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
     # TODO(F): Task 3: Handle POST Request (20%)
-    response.status_code, response.reason = 200, 'OK'
     if request.method == 'POST':
         binary_data = request.read_message_body()
         obj = json.loads(binary_data)
@@ -71,17 +70,35 @@ def task5_test_html(server: HTTPServer, request: HTTPRequest, response: HTTPResp
 
 
 def task5_cookie_login(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
-    # TODO: Task 5: Cookie, Step 1 Login Authorization
+    # TODO(F): Task 5: Cookie, Step 1 Login Authorization
     obj = json.loads(request.read_message_body())
     if obj["username"] == 'admin' and obj['password'] == 'admin':
-        pass
+        response.add_header("Set-Cookie", "Authenticated=yes")
+        response.status_code, response.reason = 200, "OK"
     else:
-        pass
+        response.status_code, response.reason = 403, "Forbidden"
 
 
 def task5_cookie_getimage(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
-    # TODO: Task 5: Cookie, Step 2 Access Protected Resources
-    pass
+    # TODO(F): Task 5: Cookie, Step 2 Access Protected Resources
+    headers = request.headers
+    for h in headers:
+        if h.name == "Cookie" and h.value == "Authenticated=yes":
+            cwd = os.getcwd()
+            path = os.path.join(cwd, "data\\test.jpg")
+            try:
+                file = open(path, mode='rb')
+            except FileNotFoundError:
+                response.status_code, response.reason = 404, 'Not Found'
+                return
+            content = file.read()
+            response.add_header("Content-Length", str(len(content)))
+            path = path.split("\\")[-1]
+            content_type = mimetypes.guess_type(path)
+            response.add_header("Content-Type", content_type[0])
+            response.status_code, response.reason, response.body = 200, "OK", content
+            return
+    response.status_code, response.reason = 403, "Forbidden"
 
 
 def task5_session_login(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
