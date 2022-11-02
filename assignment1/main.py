@@ -18,6 +18,7 @@ def default_handler(server: HTTPServer, request: HTTPRequest, response: HTTPResp
 
 
 def task2_data_handler(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
+    # TODO(F): Task 2: Serve static content based on request URL (20%)
     if request.method == "POST":
         response.status_code, response.reason = 405, "Method Not Allowed"
         return
@@ -38,17 +39,22 @@ def task2_data_handler(server: HTTPServer, request: HTTPRequest, response: HTTPR
 
 
 def task3_json_handler(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
-    # TODO: Task 3: Handle POST Request (20%)
+    # TODO(F): Task 3: Handle POST Request (20%)
     response.status_code, response.reason = 200, 'OK'
     if request.method == 'POST':
         binary_data = request.read_message_body()
         obj = json.loads(binary_data)
-        # TODO: Task 3: Store data when POST
-        pass
+        # TODO(F): Task 3: Store data when POST
+        server.task3_data = obj['data']
+        response.status_code, response.reason = 200, "OK"
     else:
         obj = {'data': server.task3_data}
         return_binary = json.dumps(obj).encode()
-        pass
+        content_type = "application/json"
+        content_length = str(len(return_binary))
+        response.add_header("Content-Type", content_type)
+        response.add_header("Content-Length", content_length)
+        response.status_code, response.reason, response.body = 200, "OK", return_binary
 
 
 def task4_url_redirection(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
@@ -93,7 +99,7 @@ def task5_session_getimage(server: HTTPServer, request: HTTPRequest, response: H
     pass
 
 
-# TODO: Change this to your student ID, otherwise you may lost all of your points
+# TODO(F): Change this to your student ID, otherwise you may lost all of your points
 YOUR_STUDENT_ID = 12013006
 
 http_server = HTTPServer(config.LISTEN_PORT)

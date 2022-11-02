@@ -42,27 +42,29 @@ class HTTPRequest:
                          CRLF
         """
         # TODO(F): Task1, read from socket and fill HTTPRequest object fields
-        msg = self.socket.recvfrom(2048)[0]
+        msg = self.socket.recvfrom(65536)[0]
         msg = str(msg)
         info = msg.split(" ", maxsplit=2)
-        self.method = info[0].split("'")[1]
+        self.method = info[0][2:]
         self.request_target = info[1]
-        print(info[2])
+        # print(info[2])
         strings = info[2].split('\\r\\n')
         self.http_version = strings[0]
         for s in strings[1:]:
             kv = s.split(": ")
             if len(kv) == 2:
                 self.headers.append(HTTPHeader(kv[0], kv[1]))
+        body = strings[-1][:-1]
+        self.buffer = bytearray(body.encode())
         # Debug: print http request
-        print(f"{self.method} {self.request_target} {self.http_version}")
-        for h in self.headers:
-            print(f"{h.name}: {h.value}")
-        print()
+        # print(f"{self.method} {self.request_target} {self.http_version}")
+        # for h in self.headers:
+        #     print(f"{h.name}: {h.value}")
+        # print()
 
     def read_message_body(self) -> bytes:
         # TODO: Task 3: complete read_message_body here
-        pass
+        return self.buffer
 
     def get_header(self, key: str) -> Union[str, None]:
         for h in self.headers:
