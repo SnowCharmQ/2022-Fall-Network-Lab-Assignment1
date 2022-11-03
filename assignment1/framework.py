@@ -42,14 +42,18 @@ class HTTPRequest:
                          CRLF
         """
         # TODO(F): Task1, read from socket and fill HTTPRequest object fields
-        self.socket.settimeout(1)
         msg = ""
-        piece = self.socket.recv(1024)
-        while piece != "":
-            msg += piece.decode()
+        buf_size = self.socket.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+        self.socket.settimeout(3)
+        while True:
             try:
-                piece = self.socket.recv(1024)
+                raw = self.socket.recv(buf_size)
             except socket.timeout:
+                break
+            raw = raw.decode()
+            msg += raw
+            length = len(raw)
+            if length < buf_size:
                 break
         info = msg.split(" ", maxsplit=2)
         self.method = info[0]
@@ -101,7 +105,7 @@ class HTTPResponse:
         for h in self.headers:
             msg += h.name + ": " + h.value + "\r\n"
         msg += "\r\n"
-        self.socket.send(msg.encode() + self.body)
+        self.socket.sendall(msg.encode() + self.body)
 
     def add_header(self, name: str, value: str):
         self.headers.append(HTTPHeader(name, value))
