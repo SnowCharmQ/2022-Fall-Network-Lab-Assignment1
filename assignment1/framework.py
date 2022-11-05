@@ -55,17 +55,18 @@ class HTTPRequest:
             length = len(raw)
             if length < buf_size:
                 break
-        info = msg.split(" ", maxsplit=2)
+        info = msg.split("\r\n\r\n", maxsplit=2)
+        body = info[1]
+        self.buffer = bytearray(body.encode())
+        info = info[0].split(" ", maxsplit=2)
         self.method = info[0]
         self.request_target = info[1]
-        strings = info[2].split('\r\n')
+        strings = info[2].split("\r\n")
         self.http_version = strings[0]
         for s in strings[1:]:
             kv = s.split(": ")
             if len(kv) == 2:
                 self.headers.append(HTTPHeader(kv[0], kv[1]))
-        body = strings[-1]
-        self.buffer = bytearray(body.encode())
         # Debug: print http request
         # print(f"{self.method} {self.request_target} {self.http_version}")
         # for h in self.headers:

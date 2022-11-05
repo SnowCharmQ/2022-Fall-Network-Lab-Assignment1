@@ -35,7 +35,9 @@ def task2_data_handler(server: HTTPServer, request: HTTPRequest, response: HTTPR
     response.add_header("Content-Type", content_type[0])
     content = file.read()
     response.add_header("Content-Length", str(len(content)))
-    response.status_code, response.reason, response.body = 200, "OK", content
+    response.status_code, response.reason = 200, "OK"
+    if request.method.upper() == "GET":
+        response.body = content
 
 
 def task3_json_handler(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
@@ -53,7 +55,9 @@ def task3_json_handler(server: HTTPServer, request: HTTPRequest, response: HTTPR
         content_length = str(len(return_binary))
         response.add_header("Content-Type", content_type)
         response.add_header("Content-Length", content_length)
-        response.status_code, response.reason, response.body = 200, "OK", return_binary
+        response.status_code, response.reason = 200, "OK"
+        if request.method.upper() == "GET":
+            response.body = return_binary
 
 
 def task4_url_redirection(server: HTTPServer, request: HTTPRequest, response: HTTPResponse):
@@ -96,7 +100,9 @@ def task5_cookie_getimage(server: HTTPServer, request: HTTPRequest, response: HT
             path = path.split("\\")[-1]
             content_type = mimetypes.guess_type(path)
             response.add_header("Content-Type", content_type[0])
-            response.status_code, response.reason, response.body = 200, "OK", content
+            response.status_code, response.reason = 200, "OK"
+            if request.method.upper() == "GET":
+                response.body = content
             return
     response.status_code, response.reason = 403, "Forbidden"
 
@@ -133,7 +139,9 @@ def task5_session_getimage(server: HTTPServer, request: HTTPRequest, response: H
             path = path.split("\\")[-1]
             content_type = mimetypes.guess_type(path)
             response.add_header("Content-Type", content_type[0])
-            response.status_code, response.reason, response.body = 200, "OK", content
+            response.status_code, response.reason = 200, "OK"
+            if request.method.upper() == "GET":
+                response.body = content
             return
     response.status_code, response.reason = 403, "Forbidden"
 
