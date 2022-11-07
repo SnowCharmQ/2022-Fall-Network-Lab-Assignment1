@@ -24,7 +24,7 @@ def task2_data_handler(server: HTTPServer, request: HTTPRequest, response: HTTPR
         return
     target = request.request_target[0:]
     cwd = os.getcwd()
-    path = os.path.join(cwd, target.replace("/", "\\")[1:])
+    path = os.path.join(cwd, target[1:])
     try:
         file = open(path, mode='rb')
     except FileNotFoundError:
@@ -89,7 +89,7 @@ def task5_cookie_getimage(server: HTTPServer, request: HTTPRequest, response: HT
     for h in headers:
         if h.name == "Cookie" and h.value == "Authenticated=yes":
             cwd = os.getcwd()
-            path = os.path.join(cwd, "data\\test.jpg")
+            path = os.path.join(cwd, "data/test.jpg")
             try:
                 file = open(path, mode='rb')
             except FileNotFoundError:
@@ -128,7 +128,7 @@ def task5_session_getimage(server: HTTPServer, request: HTTPRequest, response: H
     for h in headers:
         if h.name == "Cookie" and server.session.__contains__(h.value):
             cwd = os.getcwd()
-            path = os.path.join(cwd, "data\\test.jpg")
+            path = os.path.join(cwd, "data/test.jpg")
             try:
                 file = open(path, mode='rb')
             except FileNotFoundError:
