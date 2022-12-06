@@ -2,7 +2,6 @@ import os
 import json
 import random
 import string
-from typing import *
 import config
 import mimetypes
 from framework import HTTPServer, HTTPRequest, HTTPResponse

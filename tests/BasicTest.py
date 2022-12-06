@@ -4,7 +4,7 @@ import unittest
 try:
     import main
 except ModuleNotFoundError:
-    from .. import main
+    from assignment1 import main
 
 
 class BasicTest(unittest.TestCase):
